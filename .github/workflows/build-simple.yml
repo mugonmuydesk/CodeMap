@@ -18,20 +18,17 @@ jobs:
         uses: microsoft/setup-msbuild@v2
       
       - name: Create stub Windows executable
+        shell: cmd
         run: |
-          # For now, create a simple stub that shows Windows builds work
-          # Full LLVM/libclang integration needs more work
-          @'
-          #include <iostream>
-          int main() {
-              std::cout << "CodeMap v1.0.2 - Windows Build" << std::endl;
-              std::cout << "Full functionality requires libclang." << std::endl;
-              std::cout << "Use WSL for full features or wait for next release." << std::endl;
-              return 0;
-          }
-          '@ | Out-File -FilePath main.cpp -Encoding UTF8
+          echo #include ^<iostream^> > main.cpp
+          echo int main() { >> main.cpp
+          echo     std::cout ^<^< "CodeMap v1.0.2 - Windows Build" ^<^< std::endl; >> main.cpp
+          echo     std::cout ^<^< "Full functionality requires libclang." ^<^< std::endl; >> main.cpp
+          echo     std::cout ^<^< "Use WSL for full features or wait for next release." ^<^< std::endl; >> main.cpp
+          echo     return 0; >> main.cpp
+          echo } >> main.cpp
           
-          # Compile simple stub
+          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
           cl.exe /EHsc /Fe:codemap.exe main.cpp
           
       - name: Package Windows Release
