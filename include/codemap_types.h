@@ -1,3 +1,7 @@
+// PROTECTED CONTRACT: Do not edit except with explicit approval
+// This file defines the core data structures for the CodeMap project.
+// Any modifications require explicit approval and must maintain backward compatibility.
+
 #ifndef CODEMAP_TYPES_H
 #define CODEMAP_TYPES_H
 

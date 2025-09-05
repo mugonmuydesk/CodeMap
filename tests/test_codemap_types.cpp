@@ -1,3 +1,7 @@
+// PROTECTED TEST: Do not edit except with explicit approval
+// This test file verifies the contracts defined in codemap_types.h
+// Tests are immutable once marked as protected to ensure contract compliance.
+
 #include <iostream>
 #include <cassert>
 #include <vector>

@@ -1,3 +1,7 @@
+// PROTECTED CONTRACT: Do not edit except with explicit approval
+// This file defines the JSON export/import interface for function graphs.
+// Any modifications require explicit approval and must maintain backward compatibility.
+
 #ifndef JSON_EXPORTER_H
 #define JSON_EXPORTER_H
 

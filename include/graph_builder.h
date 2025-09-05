@@ -1,3 +1,7 @@
+// PROTECTED CONTRACT: Do not edit except with explicit approval
+// This file defines the graph builder interface for constructing function call graphs.
+// Any modifications require explicit approval and must maintain backward compatibility.
+
 #ifndef GRAPH_BUILDER_H
 #define GRAPH_BUILDER_H
 

@@ -1,3 +1,7 @@
+// PROTECTED CONTRACT: Do not edit except with explicit approval
+// This file defines the parser interface for extracting function information.
+// Any modifications require explicit approval and must maintain backward compatibility.
+
 #ifndef PARSER_H
 #define PARSER_H
 

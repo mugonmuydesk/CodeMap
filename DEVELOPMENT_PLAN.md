@@ -39,6 +39,12 @@ Always work in:
 
 6. **Iterate steps 1–5 until all tests pass.**
 
+6.5. **GitHub Actions contract enforcement**
+   - On every push and pull request, GitHub Actions checks whether protected files in `/mnt/c/dev/CodeMap/Repo/include/` or `/mnt/c/dev/CodeMap/Repo/tests/` contain the markers `// PROTECTED CONTRACT` or `// PROTECTED TEST`.
+   - If those markers appear in the diff, the job fails.
+   - A failed job blocks merging.
+   - This ensures contracts and tests remain immutable once marked as protected.
+
 7. **Push to GitHub**
    - Push repo changes.
    - Publish release with correct version tag.
