@@ -58,7 +58,31 @@ if(WIN32)
             )
         endif()
     else()
-        message(FATAL_ERROR "LLVM/Clang not found on Windows. Please install LLVM.")
+        # Try to find libclang directly if CMake config not available
+        if(DEFINED LIBCLANG_LIBRARY AND DEFINED LIBCLANG_INCLUDE_DIR)
+            message(STATUS "Using direct libclang paths")
+            message(STATUS "  Library: ${LIBCLANG_LIBRARY}")
+            message(STATUS "  Include: ${LIBCLANG_INCLUDE_DIR}")
+            include_directories(${LIBCLANG_INCLUDE_DIR})
+        else()
+            # Last resort: try to find libclang manually
+            find_path(LIBCLANG_INCLUDE_DIR clang-c/Index.h
+                PATHS "C:/LLVM/include" "C:/Program Files/LLVM/include"
+            )
+            find_library(LIBCLANG_LIBRARY
+                NAMES libclang clang
+                PATHS "C:/LLVM/lib" "C:/Program Files/LLVM/lib"
+            )
+            
+            if(LIBCLANG_LIBRARY AND LIBCLANG_INCLUDE_DIR)
+                message(STATUS "Found libclang manually")
+                message(STATUS "  Library: ${LIBCLANG_LIBRARY}")
+                message(STATUS "  Include: ${LIBCLANG_INCLUDE_DIR}")
+                include_directories(${LIBCLANG_INCLUDE_DIR})
+            else()
+                message(FATAL_ERROR "LLVM/Clang not found on Windows. Please install LLVM.")
+            endif()
+        endif()
     endif()
     
     set(PLATFORM_LIBS ${LIBCLANG_LIBRARY})

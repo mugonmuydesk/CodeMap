@@ -30,6 +30,26 @@ jobs:
           if (Test-Path "C:\LLVM\bin\clang.exe") {
             Write-Host "LLVM installed successfully"
             echo "C:\LLVM\bin" | Out-File -Append -FilePath $env:GITHUB_PATH -Encoding utf8
+            
+            # Check what's actually installed
+            Write-Host "LLVM installation contents:"
+            Get-ChildItem "C:\LLVM" -Directory | ForEach-Object { Write-Host "  Directory: $_" }
+            
+            # Check for libclang
+            if (Test-Path "C:\LLVM\bin\libclang.dll") {
+              Write-Host "Found libclang.dll in C:\LLVM\bin"
+            }
+            if (Test-Path "C:\LLVM\lib\libclang.lib") {
+              Write-Host "Found libclang.lib in C:\LLVM\lib"
+            }
+            
+            # Check for CMake files
+            if (Test-Path "C:\LLVM\lib\cmake") {
+              Write-Host "Found CMake directory"
+              Get-ChildItem "C:\LLVM\lib\cmake" -Directory | ForEach-Object { Write-Host "  CMake module: $_" }
+            } else {
+              Write-Host "No CMake directory found - will use direct library linking"
+            }
           } else {
             Write-Error "LLVM installation failed"
             exit 1
@@ -37,12 +57,22 @@ jobs:
           
       - name: Configure CMake
         run: |
+          # Try with CMake config if available, otherwise use direct paths
+          $llvmArgs = @()
+          if (Test-Path "C:\LLVM\lib\cmake\llvm") {
+            $llvmArgs += "-DLLVM_DIR=C:\LLVM\lib\cmake\llvm"
+            $llvmArgs += "-DClang_DIR=C:\LLVM\lib\cmake\clang"
+          } else {
+            Write-Host "Using direct library paths since CMake config not found"
+            $llvmArgs += "-DLIBCLANG_LIBRARY=C:\LLVM\lib\libclang.lib"
+            $llvmArgs += "-DLIBCLANG_INCLUDE_DIR=C:\LLVM\include"
+          }
+          
           cmake -B build -S . `
             -G "Visual Studio 17 2022" `
             -A x64 `
             -DCMAKE_BUILD_TYPE=Release `
-            -DLLVM_DIR="C:\LLVM\lib\cmake\llvm" `
-            -DClang_DIR="C:\LLVM\lib\cmake\clang"
+            $llvmArgs
             
       - name: Build
         run: cmake --build build --config Release --verbose
