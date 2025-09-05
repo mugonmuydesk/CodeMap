@@ -1,6 +1,0 @@
-C:/dev/CodeMap/Repo/build/CMakeFiles/codemap_core.dir
-C:/dev/CodeMap/Repo/build/CMakeFiles/test_codemap_types.dir
-C:/dev/CodeMap/Repo/build/CMakeFiles/test_json_exporter.dir
-C:/dev/CodeMap/Repo/build/CMakeFiles/tests.dir
-C:/dev/CodeMap/Repo/build/CMakeFiles/ALL_BUILD.dir
-C:/dev/CodeMap/Repo/build/CMakeFiles/ZERO_CHECK.dir
