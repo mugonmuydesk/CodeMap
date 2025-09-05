@@ -37,11 +37,16 @@ set(CORE_SOURCES
     src/json_exporter.cpp
     src/parser.cpp
     src/graph_builder.cpp
+    src/webview_app_simple.cpp
 )
 
 # Create static library
 add_library(codemap_core STATIC ${CORE_SOURCES})
 target_link_libraries(codemap_core ${LIBCLANG_LIBRARY})
+
+# Main executable
+add_executable(codemap src/main.cpp)
+target_link_libraries(codemap codemap_core ${LIBCLANG_LIBRARY} stdc++fs pthread)
 
 # Test executables
 add_executable(test_codemap_types tests/test_codemap_types.cpp src/codemap_types.cpp)
@@ -56,6 +61,9 @@ set_target_properties(test_codemap_types test_json_exporter test_parser test_gra
     PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/tests
 )
+
+# Copy frontend files to build directory
+file(COPY ${CMAKE_SOURCE_DIR}/frontend DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 
 # Custom target to build all tests
 add_custom_target(tests DEPENDS test_codemap_types test_json_exporter test_parser test_graph_builder)

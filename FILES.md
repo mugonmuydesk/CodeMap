@@ -33,6 +33,12 @@ Before making any changes, read these documents in order:
   Dependencies: `codemap_types.h`.  
   Used by: `graph_builder.h`, frontend visualization (future).
 
+- `include/webview_app.h` *(Created in Phase 4 - PROTECTED)*  
+  WebviewApp interface for frontend visualization.  
+  Defines: `WebviewApp`, `IWebviewBridge`.  
+  Dependencies: `codemap_types.h`, `graph_builder.h`.  
+  Used by: Main application.
+
 ## Implementation Files
 
 - `src/codemap_types.cpp`  
@@ -56,6 +62,17 @@ Before making any changes, read these documents in order:
   Implements: `GraphBuilder` methods (buildFromProject, toJSON, loadFromJSON, file I/O).  
   Dependencies: `graph_builder.h`, `parser.h`, `json_exporter.h`.  
   Features: Missing function resolution, stub detection, graph validation.
+
+- `src/webview_app_simple.cpp` *(Implemented in Phase 4)*  
+  Simplified webview application implementation.  
+  Implements: `WebviewApp` methods without native webview dependency.  
+  Dependencies: `webview_app.h`, `json_exporter.h`, filesystem.  
+  Features: Graph export to JSON, HTML visualization instructions.
+
+- `src/main.cpp` *(Implemented in Phase 4)*  
+  Main application entry point.  
+  Features: Command-line interface, demo mode, project analysis, JSON loading.  
+  Dependencies: `webview_app.h`, `graph_builder.h`, `json_exporter.h`.
 
 ## Test Files (Protected Tests)
 
@@ -97,6 +114,23 @@ Before making any changes, read these documents in order:
   Linux/WSL shell script for building and running all tests.  
   Functions: Clean build, compile tests, execute test suite.  
   Platform: Linux/WSL/bash.
+
+## Frontend Files (Phase 4)
+
+- `frontend/index.html`  
+  Main HTML page for the visualization interface.  
+  Features: Controls toolbar, graph container, sidebar, legend.  
+  Dependencies: Cytoscape.js (CDN), styles.css, app.js.
+
+- `frontend/styles.css`  
+  Dark theme styling for the visualization interface.  
+  Features: Modern dark theme, responsive layout, interactive elements.  
+  Components: Header controls, graph container, sidebar, legend.
+
+- `frontend/app.js`  
+  JavaScript application for interactive graph visualization.  
+  Dependencies: Cytoscape.js library.  
+  Features: Graph rendering, layouts, filtering, node selection, export.
 
 ## Documentation
 
