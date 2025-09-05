@@ -143,6 +143,8 @@ This project follows strict contract protection:
 3. Only implementations in `src/` can be modified
 4. All changes must pass existing tests
 5. See [`DEVELOPMENT_PLAN.md`](/mnt/c/dev/CodeMap/Repo/DEVELOPMENT_PLAN.md) for the full workflow
+6. See [`UI_DEVELOPMENT_PLAN.md`](/mnt/c/dev/CodeMap/Repo/UI_DEVELOPMENT_PLAN.md) for GUI implementation roadmap
+7. See [`UI_MOCKUPS.md`](/mnt/c/dev/CodeMap/Repo/docs/UI_MOCKUPS.md) for visual mockups of the planned GUI
 
 ## 📄 License
 
