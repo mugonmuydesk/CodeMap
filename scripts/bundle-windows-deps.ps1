@@ -28,15 +28,24 @@ function Get-DLLDependencies {
     $dependencies = @()
     
     # Try dumpbin first (Visual Studio)
-    $dumpbinPath = @(
+    $dumpbinPaths = @(
         "${env:ProgramFiles(x86)}\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\*\bin\Hostx64\x64\dumpbin.exe",
         "${env:ProgramFiles}\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\*\bin\Hostx64\x64\dumpbin.exe",
         "${env:ProgramFiles(x86)}\Microsoft Visual Studio\2019\Enterprise\VC\Tools\MSVC\*\bin\Hostx64\x64\dumpbin.exe"
-    ) | Where-Object { Test-Path $_ } | Select-Object -First 1
+    )
+    
+    $dumpbinPath = $null
+    foreach ($path in $dumpbinPaths) {
+        $resolved = Get-ChildItem -Path $path -ErrorAction SilentlyContinue | Select-Object -First 1
+        if ($resolved) {
+            $dumpbinPath = $resolved.FullName
+            break
+        }
+    }
     
     if ($dumpbinPath) {
         Write-Log "Using dumpbin to analyze dependencies"
-        $output = & (Get-Item $dumpbinPath) /DEPENDENTS $FilePath 2>&1
+        $output = & "$dumpbinPath" /DEPENDENTS $FilePath 2>&1
         $inDependents = $false
         foreach ($line in $output) {
             if ($line -match "Image has the following dependencies") {
