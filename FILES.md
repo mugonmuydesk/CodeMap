@@ -165,6 +165,12 @@ Before making any changes, read these documents in order:
   Functions: Checks for PROTECTED markers, blocks modifications.  
   Triggers: Push events, pull requests.
 
+- `.github/workflows/build-release.yml`  
+  Automated multi-platform build and release workflow.  
+  Functions: Builds Windows and Linux binaries, creates GitHub releases.  
+  Triggers: Version tags (v*), manual dispatch.  
+  Platforms: Windows (MSVC + LLVM), Linux (GCC + libclang).
+
 ## Configuration Files
 
 - `.gitignore`  

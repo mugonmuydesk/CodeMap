@@ -197,6 +197,57 @@ Define contracts in headers (`/mnt/c/dev/CodeMap/Repo/include/`):
 - Update FILES.md with final file structure.
 - Update context.md with release status.
 
+## Automated CI/CD Process
+
+### GitHub Actions Build Pipeline
+
+CodeMap uses GitHub Actions for automated multi-platform builds and releases:
+
+#### Build Workflow (`build-release.yml`)
+Triggered on:
+- Version tags (`v*`)
+- Manual workflow dispatch (for testing)
+
+#### Build Process:
+1. **Windows Build** (windows-latest runner)
+   - Installs MSVC and LLVM 18
+   - Builds with Visual Studio generator
+   - Packages codemap.exe with required DLLs
+   - Creates Windows zip archive
+
+2. **Linux Build** (ubuntu-latest runner)
+   - Installs libclang-18 and build tools
+   - Builds with GCC
+   - Runs test suite
+   - Creates Linux tar.gz archive
+
+3. **Release Creation** (when tag is pushed)
+   - Downloads both platform artifacts
+   - Creates GitHub Release
+   - Attaches binaries for download
+   - Generates release notes automatically
+
+### Local vs CI Development
+
+#### Local Development
+- **Primary environment**: WSL2 or native Linux
+- **Build type**: Debug builds for development
+- **Testing**: Run tests locally with `./run_tests.sh`
+- **Quick iteration**: Fast compile-test cycles
+
+#### CI/CD Builds
+- **Platforms**: Windows and Linux automated builds
+- **Build type**: Release builds with optimizations
+- **Consistency**: Reproducible builds across platforms
+- **Distribution**: Automatic binary packaging
+
+### Benefits of CI/CD
+- **No cross-compilation needed**: Native builds on each platform
+- **Consistent releases**: Same build environment every time
+- **Automatic distribution**: Binaries available immediately on release
+- **Quality assurance**: Tests run before packaging
+- **Multi-platform support**: Windows and Linux from single codebase
+
 ### 3. Testing Plan
 
 **Unit tests:**

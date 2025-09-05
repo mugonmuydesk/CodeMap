@@ -175,6 +175,11 @@ CodeMap will be a visual call graph generator that:
   - Tarball package: `codemap-v1.0.0-linux-x64.tar.gz`
 - **GitHub repository** fully updated with all phases complete
 - **73 tests** all passing in release build
+- **GitHub Actions CI/CD** configured (v1.0.1):
+  - Automated Windows builds with MSVC and LLVM
+  - Automated Linux builds with GCC and libclang
+  - Multi-platform releases from version tags
+  - Build status badges in README
 
 ### 🎉 Project Complete!
 CodeMap v1.0.0 is now a fully functional visual call graph generator with:

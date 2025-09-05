@@ -1,5 +1,8 @@
 # CodeMap
 
+[![Build Release](https://github.com/mugonmuydesk/CodeMap/actions/workflows/build-release.yml/badge.svg)](https://github.com/mugonmuydesk/CodeMap/actions)
+[![Protected Contracts](https://github.com/mugonmuydesk/CodeMap/actions/workflows/protect-contracts.yml/badge.svg)](https://github.com/mugonmuydesk/CodeMap/actions)
+
 *A visual call graph generator that maps how your project's functions connect.*
 
 CodeMap scans your source files, finds functions, and shows how they call each other in an interactive graph. Each function appears as a box, and arrows show the flow of calls across files and modules. Missing, stubbed, or external calls are highlighted so you can spot wiring issues at a glance.
@@ -15,14 +18,23 @@ CodeMap scans your source files, finds functions, and shows how they call each o
 
 ## 🚀 Getting Started
 
-### Prerequisites
+### Download Pre-built Binaries
+
+The easiest way to get started is to download pre-built binaries from the [Releases page](https://github.com/mugonmuydesk/CodeMap/releases):
+
+- **Windows x64**: `codemap-windows-x64.zip` - Includes codemap.exe and required DLLs
+- **Linux x64**: `codemap-linux-x64.tar.gz` - Includes codemap executable
+
+### Building from Source
+
+#### Prerequisites
 
 - C++17 (or later) compiler
 - CMake 3.12 or higher
-- (Future) libclang for C++ parsing
-- (Future) Webview library for UI
+- libclang-18 (Linux) or LLVM 18 (Windows)
+- Webview library (optional, for native UI)
 
-### Build
+#### Build
 
 ```bash
 # Clone the repository
@@ -80,21 +92,22 @@ This project uses a contract-first development approach:
 - GitHub Actions automatically blocks any changes to protected files
 - Only implementation files in `src/` can be modified
 
-## 🎯 Current Status
+## 🏗️ Build Status
 
-**Phase 1: Skeleton & Contracts** ✅ COMPLETED
-- Core data structures defined
-- Contract interfaces established
-- Test framework operational
-- GitHub Actions protection active
+### Automated CI/CD
+CodeMap uses GitHub Actions for automated builds and releases:
+- **Multi-platform builds**: Automatic Windows and Linux binaries on each release
+- **Contract protection**: Ensures interfaces remain stable
+- **Tested releases**: All builds run tests before packaging
 
-**Phase 2: Parser (Backend)** 🚧 IN PROGRESS
-- Implementing C++ parser with libclang
-- Function detection and call analysis
+### Current Status
 
-## 📊 Usage (Coming Soon)
+**v1.0.0** ✅ RELEASED - All phases complete!
+- Phase 1-7: All development phases successfully completed
+- 73 tests passing across all platforms
+- Production-ready with full feature set
 
-Once complete, CodeMap will work like this:
+## 📊 Usage
 
 ```bash
 # Analyze a C++ project
