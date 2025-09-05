@@ -12,6 +12,29 @@ Always work in:
 - `/mnt/c/dev/CodeMap/Repo` → permanent project files (pushed to GitHub)
 - `/mnt/c/dev/CodeMap/Scratch` → temporary files (never pushed/pulled)
 
+### Step Transition Protocol
+**IMPORTANT**: When progressing between workflow steps, always announce:
+1. **Previous Step Completed** - Quote what was just finished
+2. **Current Step Starting** - Quote what you're about to do
+3. **Next Step Preview** - Quote what comes after
+
+Example transition announcements:
+
+```
+📋 Workflow Progress:
+✅ Completed Step 4: "Run tests" - All 73 tests passing
+🔄 Starting Step 5: "Address errors" - Fixing JsonExporter::jsonToGraph implementation
+⏭️ Next Step 6: "Iterate steps 1-5 until all tests pass"
+```
+
+Another example during documentation phase:
+```
+📋 Workflow Progress:
+✅ Completed Step 6: "Iterate steps 1–5 until all tests pass" - All tests now passing
+🔄 Starting Step 7: "Push to GitHub" - Committing and pushing Phase 3 implementation
+⏭️ Next Step 10: "Update documentation" - Will update FILES.md and context.md
+```
+
 ### Critical Dependency Rule
 **NEVER alter the development plan because something isn't installed.** If a required dependency is missing:
 1. STOP immediately - do not create alternative implementations
