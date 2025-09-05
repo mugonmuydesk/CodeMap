@@ -45,10 +45,11 @@ Before making any changes, read these documents in order:
   Implements: `JSONExporter::exportGraph`, `JSONExporter::importGraph`.  
   Dependencies: `json_exporter.h`, `codemap_types.h`.
 
-- `src/parser.cpp` *(To be implemented in Phase 2)*  
+- `src/parser.cpp` *(Implemented in Phase 2)*  
   C++ parser implementation using libclang for function extraction.  
-  Will implement: `CppParser` methods (parseFile, parseProject, etc.).  
-  Dependencies: `parser.h`, `codemap_types.h`, libclang.
+  Implements: `CppParser` methods (parseFile, parseProject, getSupportedExtensions).  
+  Dependencies: `parser.h`, `codemap_types.h`, libclang-18.  
+  Features: Function detection, call graph extraction, stub/missing/external detection.
 
 - `src/graph_builder.cpp` *(To be implemented in Phase 3)*  
   Graph construction and analysis from parsed source files.  
@@ -67,10 +68,11 @@ Before making any changes, read these documents in order:
   Tests: Export format, import validation, round-trip consistency.  
   Dependencies: `json_exporter.h`, `codemap_types.h`.
 
-- `tests/test_parser.cpp` *(To be created in Phase 2)*  
-  Tests for C++ parser functionality.  
-  Will test: Function detection, call extraction, file parsing.  
-  Dependencies: `parser.h`, `codemap_types.h`.
+- `tests/test_parser.cpp` *(Created in Phase 2 - PROTECTED)*  
+  Comprehensive tests for C++ parser functionality.  
+  Tests: Function detection, call extraction, file/project parsing, edge cases.  
+  Dependencies: `parser.h`, `codemap_types.h`, `json_exporter.h`.  
+  Test count: 12 test functions covering all parser methods.
 
 ## Build Configuration
 

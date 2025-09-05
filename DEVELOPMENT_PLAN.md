@@ -12,6 +12,14 @@ Always work in:
 - `/mnt/c/dev/CodeMap/Repo` → permanent project files (pushed to GitHub)
 - `/mnt/c/dev/CodeMap/Scratch` → temporary files (never pushed/pulled)
 
+### Critical Dependency Rule
+**NEVER alter the development plan because something isn't installed.** If a required dependency is missing:
+1. STOP immediately - do not create alternative implementations
+2. Ask the human user to install the missing dependency
+3. Provide the exact installation command(s) they need to run
+4. Wait for confirmation that the dependency is installed before proceeding
+5. The original plan and architecture must be followed - missing dependencies are not a reason to change the design
+
 ## Steps
 
 1. **Add / change contracts and pseudocode**

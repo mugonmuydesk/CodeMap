@@ -72,6 +72,32 @@ fi
 
 echo
 
+# Run test_parser
+echo "Running test_parser..."
+echo "-------------------------------"
+if [ -f "tests/Debug/test_parser.exe" ]; then
+    # Windows build output
+    ./tests/Debug/test_parser.exe
+elif [ -f "tests/test_parser" ]; then
+    # Linux build output
+    ./tests/test_parser
+elif [ -f "test_parser" ]; then
+    # Alternative Linux build output
+    ./test_parser
+else
+    echo "Error: test_parser executable not found!"
+    TEST_FAILED=1
+fi
+
+if [ $? -ne 0 ]; then
+    echo "test_parser FAILED!"
+    TEST_FAILED=1
+else
+    echo "test_parser PASSED!"
+fi
+
+echo
+
 # Run test_json_exporter
 echo "Running test_json_exporter..."
 echo "-------------------------------"
