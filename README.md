@@ -67,7 +67,9 @@ cmd.exe /c run_tests.bat
 ├── CMakeLists.txt        # Build configuration
 ├── run_tests.bat         # Windows test runner
 ├── run_tests.sh          # Linux/WSL test runner
-└── DEVELOPMENT_PLAN.md   # Development roadmap
+├── DEVELOPMENT_PLAN.md   # Development roadmap
+├── FILES.md              # Complete file index
+└── context.md            # Current project state
 ```
 
 ## 🔒 Contract Protection
@@ -113,13 +115,21 @@ The graph will use colors to highlight function status:
 - 🔴 **Red**: Missing functions (called but not defined)
 - ⚫ **Grey**: External library calls
 
+## 📖 Documentation
+
+- **[`README.md`](/mnt/c/dev/CodeMap/Repo/README.md)** - This file: project overview
+- **[`DEVELOPMENT_PLAN.md`](/mnt/c/dev/CodeMap/Repo/DEVELOPMENT_PLAN.md)** - Detailed development workflow and phases
+- **[`FILES.md`](/mnt/c/dev/CodeMap/Repo/FILES.md)** - Complete index of all project files
+- **[`context.md`](/mnt/c/dev/CodeMap/Repo/context.md)** - Current development state and progress
+
 ## 🤝 Contributing
 
 This project follows strict contract protection:
-1. Contracts and tests are immutable once marked as protected
-2. Only implementations in `src/` can be modified
-3. All changes must pass existing tests
-4. See [DEVELOPMENT_PLAN.md](DEVELOPMENT_PLAN.md) for the full workflow
+1. **Read all documentation first** - Start with [`context.md`](/mnt/c/dev/CodeMap/Repo/context.md) which lists required reading
+2. Contracts and tests are immutable once marked as protected
+3. Only implementations in `src/` can be modified
+4. All changes must pass existing tests
+5. See [`DEVELOPMENT_PLAN.md`](/mnt/c/dev/CodeMap/Repo/DEVELOPMENT_PLAN.md) for the full workflow
 
 ## 📄 License
 

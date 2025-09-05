@@ -1,5 +1,16 @@
 # CodeMap Project Context
 
+## 📚 MANDATORY: Read All Documentation First
+
+**Before proceeding with any development work, you MUST read all project documentation:**
+
+1. **`/mnt/c/dev/CodeMap/Repo/README.md`** - Project overview, features, and build instructions
+2. **`/mnt/c/dev/CodeMap/Repo/DEVELOPMENT_PLAN.md`** - Strict workflow rules and implementation phases
+3. **`/mnt/c/dev/CodeMap/Repo/FILES.md`** - Complete file index with purposes and dependencies
+4. **`/mnt/c/dev/CodeMap/Repo/context.md`** - This file: current project state and progress
+
+These documents form the complete project specification and must be understood before making any changes.
+
 ## Current Phase: Phase 1 Complete → Phase 2 Starting
 
 ### ✅ Phase 1 Accomplishments
@@ -19,7 +30,10 @@
 - **Build system** configured with CMake
 - **Test runners** created (`run_tests.bat` and `run_tests.sh`)
 - **GitHub Actions protection** enforcing immutable contracts and tests
-- **Documentation** updated (README.md, DEVELOPMENT_PLAN.md)
+- **Documentation** created:
+  - `/mnt/c/dev/CodeMap/Repo/README.md` - Main project documentation
+  - `/mnt/c/dev/CodeMap/Repo/DEVELOPMENT_PLAN.md` - Development workflow
+  - `/mnt/c/dev/CodeMap/Repo/FILES.md` - Complete file index
 
 ### 🚧 Phase 2: Parser (Backend) - IN PROGRESS
 

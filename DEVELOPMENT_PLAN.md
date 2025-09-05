@@ -1,5 +1,11 @@
 # CodeMap – Development Plan
 
+## 📚 Related Documentation
+
+- **[`README.md`](/mnt/c/dev/CodeMap/Repo/README.md)** - Project overview and features
+- **[`FILES.md`](/mnt/c/dev/CodeMap/Repo/FILES.md)** - Complete file index
+- **[`context.md`](/mnt/c/dev/CodeMap/Repo/context.md)** - Current project state
+
 ## Workflow (strict)
 
 Always work in:
@@ -58,9 +64,11 @@ Always work in:
 9. **Clear Scratch**
    - Wipe `/mnt/c/dev/CodeMap/Scratch/`.
 
-10. **Update context.md**
-    - Refresh project state for recovery.
-    - Push to GitHub.
+10. **Update documentation**
+    - Update `/mnt/c/dev/CodeMap/Repo/FILES.md` with any new files or changes.
+    - Update `/mnt/c/dev/CodeMap/Repo/context.md` with current project state.
+    - Ensure all documentation cross-references are accurate.
+    - Push all documentation updates to GitHub.
     - Suggest clearing context.
 
 ## Architecture
@@ -153,7 +161,8 @@ Define contracts in headers (`/mnt/c/dev/CodeMap/Repo/include/`):
 - Publish GitHub Release.
 - Download exe to `/mnt/c/dev/Releases/CodeMap/<version>/`.
 - Clear Scratch.
-- Update context.md.
+- Update FILES.md with final file structure.
+- Update context.md with release status.
 
 ### 3. Testing Plan
 
