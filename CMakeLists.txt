@@ -16,10 +16,16 @@ if(WIN32)
     set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
     
     # Try to find LLVM/Clang using CMake packages
-    if(NOT DEFINED LLVM_DIR AND EXISTS "C:/Program Files/LLVM/lib/cmake/llvm")
-        set(LLVM_DIR "C:/Program Files/LLVM/lib/cmake/llvm")
-    elseif(NOT DEFINED LLVM_DIR AND EXISTS "C:/LLVM/lib/cmake/llvm")
-        set(LLVM_DIR "C:/LLVM/lib/cmake/llvm")
+    # Try different LLVM installation paths
+    if(NOT DEFINED LLVM_DIR)
+        # Check LLVM 17/18 paths
+        if(EXISTS "C:/LLVM/lib/cmake/llvm")
+            set(LLVM_DIR "C:/LLVM/lib/cmake/llvm")
+        elseif(EXISTS "C:/Program Files/LLVM/lib/cmake/llvm")
+            set(LLVM_DIR "C:/Program Files/LLVM/lib/cmake/llvm")
+        elseif(EXISTS "C:/LLVM/cmake")
+            set(LLVM_DIR "C:/LLVM/cmake")
+        endif()
     endif()
     
     find_package(LLVM CONFIG)
@@ -32,6 +38,13 @@ if(WIN32)
         add_definitions(${LLVM_DEFINITIONS_LIST})
         
         # Find Clang within LLVM
+        if(NOT DEFINED Clang_DIR)
+            if(EXISTS "${LLVM_DIR}/../clang")
+                set(Clang_DIR "${LLVM_DIR}/../clang")
+            elseif(EXISTS "C:/LLVM/lib/cmake/clang")
+                set(Clang_DIR "C:/LLVM/lib/cmake/clang")
+            endif()
+        endif()
         find_package(Clang CONFIG)
         if(Clang_FOUND)
             message(STATUS "Found Clang")
