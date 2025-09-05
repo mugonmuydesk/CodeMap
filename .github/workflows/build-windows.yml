@@ -55,15 +55,36 @@ jobs:
         run: |
           New-Item -ItemType Directory -Force -Path release-windows
           
-          # Copy executable
-          Copy-Item build\bin\Release\codemap.exe release-windows\
-          
-          # Copy required DLLs from LLVM
-          if (Test-Path "C:\LLVM\bin\libclang.dll") {
-            Copy-Item "C:\LLVM\bin\libclang.dll" release-windows\
-          }
-          if (Test-Path "C:\LLVM\bin\LLVM-C.dll") {
-            Copy-Item "C:\LLVM\bin\LLVM-C.dll" release-windows\
+          # Use the comprehensive DLL bundling script
+          if (Test-Path "scripts\bundle-windows-deps.ps1") {
+            Write-Host "Using comprehensive DLL bundling script"
+            .\scripts\bundle-windows-deps.ps1 `
+              -ExePath "build\bin\Release\codemap.exe" `
+              -OutputDir "release-windows" `
+              -LLVMPath "C:\LLVM" `
+              -Verbose
+          } else {
+            Write-Host "Bundling script not found, using fallback method"
+            # Fallback: Copy executable
+            Copy-Item build\bin\Release\codemap.exe release-windows\
+            
+            # Copy required DLLs from LLVM
+            $llvmDlls = @(
+              "libclang.dll",
+              "LLVM-C.dll",
+              "LLVM-17.dll",
+              "LLVM.dll"
+            )
+            
+            foreach ($dll in $llvmDlls) {
+              $dllPath = "C:\LLVM\bin\$dll"
+              if (Test-Path $dllPath) {
+                Copy-Item $dllPath release-windows\
+                Write-Host "Copied: $dll"
+              } else {
+                Write-Host "Not found: $dll (may be optional)"
+              }
+            }
           }
           
           # Copy frontend and docs
@@ -71,15 +92,37 @@ jobs:
           Copy-Item README.md release-windows\
           
           # List package contents
-          Get-ChildItem -Path release-windows
+          Write-Host "Package contents:"
+          Get-ChildItem -Path release-windows -Recurse | Format-Table Mode, LastWriteTime, Length, Name
+          
+          # Verify critical DLLs are present
+          $criticalDlls = @("libclang.dll")
+          $missingCritical = @()
+          foreach ($dll in $criticalDlls) {
+            if (!(Test-Path "release-windows\$dll")) {
+              $missingCritical += $dll
+            }
+          }
+          
+          if ($missingCritical.Count -gt 0) {
+            Write-Error "Critical DLLs missing: $($missingCritical -join ', ')"
+            exit 1
+          }
           
           # Create zip archive
           Compress-Archive -Path release-windows\* -DestinationPath codemap-windows-x64.zip
+          Write-Host "Created release package: codemap-windows-x64.zip"
           
       - name: Test executable
         run: |
           cd release-windows
+          Write-Host "Testing bundled executable..."
           .\codemap.exe --help
+          if ($LASTEXITCODE -ne 0) {
+            Write-Error "Executable test failed"
+            exit 1
+          }
+          Write-Host "Executable test passed!"
           
       - name: Upload Windows Artifact
         uses: actions/upload-artifact@v4
@@ -154,17 +197,21 @@ jobs:
           body: |
             ## Download
             
-            ### Windows x64
+            ### Windows x64 (Self-Contained)
             Download `codemap-windows-x64.zip` and extract. The package includes:
             - `codemap.exe` - Main executable
-            - `libclang.dll` - Required LLVM library
+            - All required LLVM/libclang DLLs (bundled)
             - `frontend/` - Web visualization files
+            - `bundle-manifest.txt` - List of bundled dependencies
             
-            Run from command prompt:
+            **No LLVM installation required!** Just extract and run:
             ```cmd
             codemap.exe --help
             codemap.exe C:\path\to\project
             ```
+            
+            Note: If you encounter any issues, ensure Visual C++ Redistributable is installed:
+            https://aka.ms/vs/17/release/vc_redist.x64.exe
             
             ### Linux x64
             Download `codemap-linux-x64.tar.gz` and extract:

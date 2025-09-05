@@ -189,15 +189,18 @@ CodeMap v1.0.0 is now a fully functional visual call graph generator with:
 - Stub/missing function detection
 - Production-ready release
 
-### 🚀 Latest Release: v1.0.1
+### 🚀 Latest Release: v1.0.2
+- **Enhanced Windows bundling**: Self-contained Windows releases with all LLVM/libclang DLLs
+- **Automated DLL detection**: PowerShell scripts for comprehensive dependency bundling
+- **Bundle validation**: Automated testing of Windows release packages
 - **CI/CD Pipeline**: GitHub Actions workflow for automated builds
 - **Multi-platform**: Windows (MSVC) and Linux (GCC) builds
 - **Automatic releases**: Triggered by version tags
-- **Release artifacts**: Available at `/mnt/c/dev/Releases/CodeMap/v1.0.1/`
+- **Release artifacts**: Available at `/mnt/c/dev/Releases/CodeMap/v1.0.2/`
 
 ### 🔄 Repository Status
 - GitHub: https://github.com/mugonmuydesk/CodeMap
-- Latest release: v1.0.1 with CI/CD
+- Latest release: v1.0.2 with enhanced Windows bundling
 - All contracts and tests are protected from modification
 - ALL 7 PHASES COMPLETE ✅
 - Continuous Integration/Deployment ACTIVE ✅
