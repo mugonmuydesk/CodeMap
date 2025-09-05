@@ -92,7 +92,7 @@ jobs:
               -ExePath "build\bin\Release\codemap.exe" `
               -OutputDir "release-windows" `
               -LLVMPath "C:\LLVM" `
-              -Verbose
+              -VerboseOutput
           } else {
             Write-Host "Bundling script not found, using fallback method"
             # Fallback: Copy executable

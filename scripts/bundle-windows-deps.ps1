@@ -7,7 +7,7 @@ param(
     
     [string]$LLVMPath = "C:\Program Files\LLVM",
     
-    [switch]$Verbose
+    [switch]$VerboseOutput
 )
 
 function Write-Log {
@@ -136,7 +136,7 @@ $missingDLLs = @()
 foreach ($dll in $allDLLs) {
     # Skip system DLLs
     if ($systemDLLs -contains $dll.ToLower()) {
-        if ($Verbose) {
+        if ($VerboseOutput) {
             Write-Log "Skipping system DLL: $dll"
         }
         continue
@@ -151,7 +151,7 @@ foreach ($dll in $allDLLs) {
             Write-Log "Copied: $dll" "SUCCESS"
             
             # Recursively check dependencies of this DLL
-            if ($Verbose) {
+            if ($VerboseOutput) {
                 $subDeps = Get-DLLDependencies -FilePath $dllPath
                 foreach ($subDep in $subDeps) {
                     if (-not ($allDLLs -contains $subDep) -and 
@@ -161,7 +161,7 @@ foreach ($dll in $allDLLs) {
                 }
             }
         } else {
-            if ($Verbose) {
+            if ($VerboseOutput) {
                 Write-Log "Already exists: $dll"
             }
         }
