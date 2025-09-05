@@ -56,6 +56,19 @@ if errorlevel 1 (
 
 echo.
 
+REM Run test_parser
+echo Running test_parser...
+echo -------------------------------
+tests\Debug\test_parser.exe
+if errorlevel 1 (
+    echo test_parser FAILED!
+    set TEST_FAILED=1
+) else (
+    echo test_parser PASSED!
+)
+
+echo.
+
 REM Run test_json_exporter
 echo Running test_json_exporter...
 echo -------------------------------
@@ -65,6 +78,19 @@ if errorlevel 1 (
     set TEST_FAILED=1
 ) else (
     echo test_json_exporter PASSED!
+)
+
+echo.
+
+REM Run test_graph_builder
+echo Running test_graph_builder...
+echo -------------------------------
+tests\Debug\test_graph_builder.exe
+if errorlevel 1 (
+    echo test_graph_builder FAILED!
+    set TEST_FAILED=1
+) else (
+    echo test_graph_builder PASSED!
 )
 
 echo.

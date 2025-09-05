@@ -51,10 +51,11 @@ Before making any changes, read these documents in order:
   Dependencies: `parser.h`, `codemap_types.h`, libclang-18.  
   Features: Function detection, call graph extraction, stub/missing/external detection.
 
-- `src/graph_builder.cpp` *(To be implemented in Phase 3)*  
+- `src/graph_builder.cpp` *(Implemented in Phase 3)*  
   Graph construction and analysis from parsed source files.  
-  Will implement: `GraphBuilder` methods.  
-  Dependencies: `graph_builder.h`, `parser.h`, `json_exporter.h`.
+  Implements: `GraphBuilder` methods (buildFromProject, toJSON, loadFromJSON, file I/O).  
+  Dependencies: `graph_builder.h`, `parser.h`, `json_exporter.h`.  
+  Features: Missing function resolution, stub detection, graph validation.
 
 ## Test Files (Protected Tests)
 
@@ -73,6 +74,12 @@ Before making any changes, read these documents in order:
   Tests: Function detection, call extraction, file/project parsing, edge cases.  
   Dependencies: `parser.h`, `codemap_types.h`, `json_exporter.h`.  
   Test count: 12 test functions covering all parser methods.
+
+- `tests/test_graph_builder.cpp` *(Created in Phase 3 - PROTECTED)*  
+  Comprehensive tests for GraphBuilder functionality.  
+  Tests: Graph construction, JSON serialization, file I/O, missing/stub detection.  
+  Dependencies: `graph_builder.h`, `json_exporter.h`, `codemap_types.h`.  
+  Test count: 15 test functions covering graph building and analysis.
 
 ## Build Configuration
 

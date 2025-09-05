@@ -123,6 +123,32 @@ else
 fi
 
 echo
+
+# Run test_graph_builder
+echo "Running test_graph_builder..."
+echo "-------------------------------"
+if [ -f "tests/Debug/test_graph_builder.exe" ]; then
+    # Windows build output
+    ./tests/Debug/test_graph_builder.exe
+elif [ -f "tests/test_graph_builder" ]; then
+    # Linux build output
+    ./tests/test_graph_builder
+elif [ -f "test_graph_builder" ]; then
+    # Alternative Linux build output
+    ./test_graph_builder
+else
+    echo "Error: test_graph_builder executable not found!"
+    TEST_FAILED=1
+fi
+
+if [ $? -ne 0 ]; then
+    echo "test_graph_builder FAILED!"
+    TEST_FAILED=1
+else
+    echo "test_graph_builder PASSED!"
+fi
+
+echo
 echo "======================================="
 
 # Check if any test failed
