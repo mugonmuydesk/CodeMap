@@ -14,26 +14,28 @@ Always work in:
 
 ### Step Transition Protocol
 **IMPORTANT**: When progressing between workflow steps, always announce:
-1. **Previous Step Completed** - Quote what was just finished
-2. **Current Step Starting** - Quote what you're about to do
-3. **Next Step Preview** - Quote what comes after
+1. **Previous Step Completed** - Quote the step number and text from DEVELOPMENT_PLAN.md
+2. **Current Step Starting** - Quote the step number and text from DEVELOPMENT_PLAN.md
+3. **Next Step Preview** - Quote the step number and text from DEVELOPMENT_PLAN.md
 
 Example transition announcements:
 
 ```
-📋 Workflow Progress:
+📋 Workflow Progress (from DEVELOPMENT_PLAN.md):
 ✅ Completed Step 4: "Run tests" - All 73 tests passing
 🔄 Starting Step 5: "Address errors" - Fixing JsonExporter::jsonToGraph implementation
-⏭️ Next Step 6: "Iterate steps 1-5 until all tests pass"
+⏭️ Next Step 6: "Iterate steps 1–5 until all tests pass."
 ```
 
 Another example during documentation phase:
 ```
-📋 Workflow Progress:
-✅ Completed Step 6: "Iterate steps 1–5 until all tests pass" - All tests now passing
+📋 Workflow Progress (from DEVELOPMENT_PLAN.md):
+✅ Completed Step 6: "Iterate steps 1–5 until all tests pass." - All tests now passing
 🔄 Starting Step 7: "Push to GitHub" - Committing and pushing Phase 3 implementation
 ⏭️ Next Step 10: "Update documentation" - Will update FILES.md and context.md
 ```
+
+Note: Always explicitly state these steps are from DEVELOPMENT_PLAN.md and include the exact step numbers.
 
 ### Critical Dependency Rule
 **NEVER alter the development plan because something isn't installed.** If a required dependency is missing:
