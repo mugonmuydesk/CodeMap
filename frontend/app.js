@@ -5,6 +5,8 @@
 let cy = null;  // Cytoscape instance
 let graphData = null;  // Current graph data
 let originalGraphData = null;  // Original unfiltered graph data
+let moduleGroups = new Map();  // Map of module names to their nodes
+let collapsedModules = new Set();  // Set of collapsed module names
 
 // Initialize the application when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
@@ -54,7 +56,33 @@ function initializeCytoscape() {
                     'target-arrow-color': '#606060',
                     'target-arrow-shape': 'triangle',
                     'curve-style': 'bezier',
-                    'arrow-scale': 1.2
+                    'arrow-scale': 1.2,
+                    'label': 'data(label)',
+                    'font-size': '10px',
+                    'text-background-color': '#1e1e1e',
+                    'text-background-opacity': 0.8,
+                    'text-background-padding': '2px',
+                    'text-background-shape': 'roundrectangle',
+                    'color': '#808080',
+                    'text-outline-width': 0,
+                    'edge-text-rotation': 'autorotate'
+                }
+            },
+            
+            // Module group styles
+            {
+                selector: '.module-group',
+                style: {
+                    'background-color': '#2d2d30',
+                    'background-opacity': 0.3,
+                    'border-width': 2,
+                    'border-color': '#606060',
+                    'border-style': 'dashed',
+                    'shape': 'roundrectangle',
+                    'padding': '20px',
+                    'text-valign': 'top',
+                    'text-halign': 'center',
+                    'font-weight': 'bold'
                 }
             },
             
@@ -111,6 +139,51 @@ function initializeCytoscape() {
                     'target-arrow-color': '#4ec9b0',
                     'z-index': 999
                 }
+            },
+            
+            // Search highlighting styles
+            {
+                selector: '.search-match',
+                style: {
+                    'border-width': 4,
+                    'border-color': '#ff9800',
+                    'background-color': '#ffb74d',
+                    'z-index': 1000,
+                    'overlay-padding': 6,
+                    'overlay-color': '#ff9800',
+                    'overlay-opacity': 0.2
+                }
+            },
+            {
+                selector: '.search-related',
+                style: {
+                    'opacity': 0.8,
+                    'z-index': 500
+                }
+            },
+            {
+                selector: '.search-dimmed',
+                style: {
+                    'opacity': 0.2
+                }
+            },
+            {
+                selector: 'edge.search-match',
+                style: {
+                    'width': 3,
+                    'line-color': '#ff9800',
+                    'target-arrow-color': '#ff9800',
+                    'z-index': 1000
+                }
+            },
+            {
+                selector: 'edge.search-related',
+                style: {
+                    'width': 2.5,
+                    'line-color': '#ffa726',
+                    'target-arrow-color': '#ffa726',
+                    'z-index': 500
+                }
             }
         ],
         
@@ -131,8 +204,29 @@ function initializeCytoscape() {
     // Node click handler
     cy.on('tap', 'node', function(evt) {
         const node = evt.target;
-        showNodeDetails(node);
-        highlightConnections(node);
+        if (!node.data('isModule')) {
+            showNodeDetails(node);
+            highlightConnections(node);
+        }
+    });
+    
+    // Double-click handler for module groups
+    cy.on('dbltap', '.module-group', function(evt) {
+        const moduleNode = evt.target;
+        const moduleName = moduleNode.id().replace('module-', '');
+        toggleModule(moduleName);
+    });
+    
+    // Node hover handlers for enhanced tooltips
+    cy.on('mouseover', 'node', function(evt) {
+        const node = evt.target;
+        if (!node.data('isModule')) {
+            showEnhancedTooltip(node, evt);
+        }
+    });
+    
+    cy.on('mouseout', 'node', function(evt) {
+        hideEnhancedTooltip();
     });
     
     // Background click handler
@@ -181,6 +275,26 @@ function setupEventListeners() {
         hideSidebar();
         clearHighlights();
     });
+    
+    // Settings panel controls
+    document.getElementById('settings-button').addEventListener('click', () => {
+        showSettings();
+    });
+    
+    document.getElementById('close-settings').addEventListener('click', () => {
+        hideSettings();
+    });
+    
+    document.getElementById('apply-settings').addEventListener('click', () => {
+        applySettings();
+    });
+    
+    document.getElementById('reset-settings').addEventListener('click', () => {
+        resetSettings();
+    });
+    
+    // Settings input handlers
+    setupSettingsInputs();
 }
 
 /**
@@ -264,10 +378,40 @@ function loadGraphData(data) {
  */
 function convertToCytoscapeFormat(data) {
     const elements = [];
+    moduleGroups.clear();
+    
+    // Group nodes by file/module
+    data.nodes.forEach((node, index) => {
+        const moduleName = getModuleName(node.file);
+        if (!moduleGroups.has(moduleName)) {
+            moduleGroups.set(moduleName, []);
+        }
+        moduleGroups.get(moduleName).push(index);
+    });
+    
+    // Add parent nodes for modules with multiple functions
+    moduleGroups.forEach((nodeIndices, moduleName) => {
+        if (nodeIndices.length > 1 && moduleName !== 'Unknown') {
+            elements.push({
+                group: 'nodes',
+                data: {
+                    id: 'module-' + moduleName,
+                    label: moduleName + ` (${nodeIndices.length})`,
+                    isModule: true,
+                    collapsed: collapsedModules.has(moduleName)
+                },
+                classes: 'module-group'
+            });
+        }
+    });
     
     // Add nodes
     data.nodes.forEach((node, index) => {
         const status = getNodeStatus(node);
+        const moduleName = getModuleName(node.file);
+        const isInGroup = moduleGroups.get(moduleName)?.length > 1 && moduleName !== 'Unknown';
+        const isCollapsed = collapsedModules.has(moduleName);
+        
         elements.push({
             group: 'nodes',
             data: {
@@ -279,20 +423,31 @@ function convertToCytoscapeFormat(data) {
                 status: status,
                 isStub: node.isStub,
                 isMissing: node.isMissing,
-                isExternal: node.isExternal
+                isExternal: node.isExternal,
+                parent: isInGroup && !isCollapsed ? 'module-' + moduleName : null
             },
-            classes: status
+            classes: status + (isCollapsed ? ' hidden' : '')
         });
     });
     
     // Add edges
     data.edges.forEach((edge, index) => {
+        // Create edge label with call location if available
+        let edgeLabel = '';
+        if (edge.line) {
+            edgeLabel = `line ${edge.line}`;
+        } else if (data.nodes[edge.from]) {
+            // If no specific line info, use the source node's line
+            edgeLabel = `line ${data.nodes[edge.from].line || '?'}`;
+        }
+        
         elements.push({
             group: 'edges',
             data: {
                 id: 'edge-' + index,
                 source: 'node-' + edge.from,
-                target: 'node-' + edge.to
+                target: 'node-' + edge.to,
+                label: edgeLabel
             }
         });
     });
@@ -308,6 +463,34 @@ function getNodeStatus(node) {
     if (node.isExternal) return 'external';
     if (node.isStub) return 'stub';
     return 'implemented';
+}
+
+/**
+ * Extract module name from file path
+ */
+function getModuleName(filePath) {
+    if (!filePath) return 'Unknown';
+    // Get just the filename without path
+    const parts = filePath.split(/[/\\]/);
+    const filename = parts[parts.length - 1];
+    // Remove extension
+    return filename.replace(/\.[^.]+$/, '');
+}
+
+/**
+ * Toggle module collapse/expand
+ */
+function toggleModule(moduleName) {
+    if (collapsedModules.has(moduleName)) {
+        collapsedModules.delete(moduleName);
+    } else {
+        collapsedModules.add(moduleName);
+    }
+    
+    // Reload the graph with updated collapse state
+    if (graphData) {
+        loadGraphData(graphData);
+    }
 }
 
 /**
@@ -369,30 +552,73 @@ function applyLayout(layoutName) {
  * Filter graph based on search query
  */
 function filterGraph(query) {
+    // Clear previous search highlights
+    cy.elements().removeClass('search-match search-related search-dimmed');
+    
     if (!query) {
-        // Show all elements
+        // Show all elements normally
         cy.elements().removeClass('hidden');
         cy.elements().style('display', 'element');
     } else {
         const lowerQuery = query.toLowerCase();
+        let matchFound = false;
         
-        // Hide all elements first
-        cy.elements().style('display', 'none');
+        // First, dim all elements
+        cy.elements().addClass('search-dimmed');
         
-        // Show matching nodes and their edges
+        // Find and highlight matching nodes
         cy.nodes().forEach(node => {
-            const name = node.data('name').toLowerCase();
-            const file = node.data('file').toLowerCase();
+            if (node.data('isModule')) return;  // Skip module groups
+            
+            const name = (node.data('name') || '').toLowerCase();
+            const file = (node.data('file') || '').toLowerCase();
             
             if (name.includes(lowerQuery) || file.includes(lowerQuery)) {
-                node.style('display', 'element');
-                node.connectedEdges().style('display', 'element');
-                node.connectedEdges().connectedNodes().style('display', 'element');
+                matchFound = true;
+                
+                // Highlight the matching node
+                node.removeClass('search-dimmed').addClass('search-match');
+                
+                // Highlight connected edges and nodes
+                node.connectedEdges().removeClass('search-dimmed').addClass('search-related');
+                node.connectedEdges().connectedNodes().removeClass('search-dimmed').addClass('search-related');
             }
         });
+        
+        // If no matches found, show a message
+        if (!matchFound && query.length > 0) {
+            showSearchMessage(`No functions matching "${query}"`);
+        } else {
+            hideSearchMessage();
+        }
     }
     
     updateStats();
+}
+
+/**
+ * Show search message
+ */
+function showSearchMessage(message) {
+    let searchMsg = document.getElementById('search-message');
+    if (!searchMsg) {
+        searchMsg = document.createElement('div');
+        searchMsg.id = 'search-message';
+        searchMsg.className = 'search-message';
+        document.querySelector('#controls').appendChild(searchMsg);
+    }
+    searchMsg.textContent = message;
+    searchMsg.style.display = 'block';
+}
+
+/**
+ * Hide search message
+ */
+function hideSearchMessage() {
+    const searchMsg = document.getElementById('search-message');
+    if (searchMsg) {
+        searchMsg.style.display = 'none';
+    }
 }
 
 /**
@@ -459,6 +685,116 @@ function updateList(elementId, items) {
  */
 function hideSidebar() {
     document.getElementById('sidebar').classList.add('hidden');
+}
+
+/**
+ * Show enhanced tooltip with detailed function information
+ */
+function showEnhancedTooltip(node, evt) {
+    const data = node.data();
+    
+    // Create tooltip element if it doesn't exist
+    let tooltip = document.getElementById('enhanced-tooltip');
+    if (!tooltip) {
+        tooltip = document.createElement('div');
+        tooltip.id = 'enhanced-tooltip';
+        tooltip.className = 'enhanced-tooltip';
+        document.body.appendChild(tooltip);
+    }
+    
+    // Calculate connections
+    let incomingCalls = 0;
+    let outgoingCalls = 0;
+    node.connectedEdges().forEach(edge => {
+        if (edge.target().id() === node.id()) {
+            incomingCalls++;
+        } else {
+            outgoingCalls++;
+        }
+    });
+    
+    // Build tooltip content
+    let statusIcon = '';
+    let statusText = '';
+    let statusClass = '';
+    
+    switch (data.status) {
+        case 'implemented':
+            statusIcon = '✓';
+            statusText = 'Implemented';
+            statusClass = 'status-implemented';
+            break;
+        case 'stub':
+            statusIcon = '⚠';
+            statusText = 'Stub';
+            statusClass = 'status-stub';
+            break;
+        case 'missing':
+            statusIcon = '✗';
+            statusText = 'Missing';
+            statusClass = 'status-missing';
+            break;
+        case 'external':
+            statusIcon = '⊙';
+            statusText = 'External';
+            statusClass = 'status-external';
+            break;
+    }
+    
+    tooltip.innerHTML = `
+        <div class="tooltip-header">
+            <span class="function-name">${data.name}</span>
+            <span class="status-badge ${statusClass}">${statusIcon} ${statusText}</span>
+        </div>
+        <div class="tooltip-body">
+            <div class="tooltip-row">
+                <span class="tooltip-label">File:</span>
+                <span class="tooltip-value">${data.file || 'Unknown'}</span>
+            </div>
+            <div class="tooltip-row">
+                <span class="tooltip-label">Line:</span>
+                <span class="tooltip-value">${data.line || 'N/A'}</span>
+            </div>
+            <div class="tooltip-separator"></div>
+            <div class="tooltip-row">
+                <span class="tooltip-label">Called by:</span>
+                <span class="tooltip-value">${incomingCalls} function${incomingCalls !== 1 ? 's' : ''}</span>
+            </div>
+            <div class="tooltip-row">
+                <span class="tooltip-label">Calls:</span>
+                <span class="tooltip-value">${outgoingCalls} function${outgoingCalls !== 1 ? 's' : ''}</span>
+            </div>
+            <div class="tooltip-row">
+                <span class="tooltip-label">Total connections:</span>
+                <span class="tooltip-value">${incomingCalls + outgoingCalls}</span>
+            </div>
+        </div>
+        <div class="tooltip-footer">
+            Click to view details and connections
+        </div>
+    `;
+    
+    // Position tooltip near the node
+    const renderedPosition = node.renderedPosition();
+    const containerOffset = cy.container().getBoundingClientRect();
+    
+    tooltip.style.left = (containerOffset.left + renderedPosition.x + 20) + 'px';
+    tooltip.style.top = (containerOffset.top + renderedPosition.y - 20) + 'px';
+    tooltip.style.display = 'block';
+    tooltip.style.opacity = '1';
+}
+
+/**
+ * Hide enhanced tooltip
+ */
+function hideEnhancedTooltip() {
+    const tooltip = document.getElementById('enhanced-tooltip');
+    if (tooltip) {
+        tooltip.style.opacity = '0';
+        setTimeout(() => {
+            tooltip.style.display = 'none';
+        }, 200);
+    }
 }
 
 /**
@@ -603,3 +939,138 @@ function loadDemoData() {
         }, 500);
     }
 }
+
+/**
+ * Settings management
+ */
+const settings = {
+    showEdgeLabels: true,
+    showTooltips: true,
+    autoGroupModules: true,
+    nodeSize: 100,
+    edgeWidth: 2,
+    fontSize: 12,
+    animationEnabled: true,
+    highQualityRender: true
+};
+
+/**
+ * Setup settings input handlers
+ */
+function setupSettingsInputs() {
+    // Range input handlers
+    document.getElementById('node-size').addEventListener('input', (e) => {
+        document.getElementById('node-size-value').textContent = e.target.value + '%';
+    });
+    
+    document.getElementById('edge-width').addEventListener('input', (e) => {
+        document.getElementById('edge-width-value').textContent = e.target.value + 'px';
+    });
+    
+    document.getElementById('font-size').addEventListener('input', (e) => {
+        document.getElementById('font-size-value').textContent = e.target.value + 'px';
+    });
+}
+
+/**
+ * Show settings panel
+ */
+function showSettings() {
+    document.getElementById('settings-panel').classList.remove('hidden');
+    
+    // Load current settings into UI
+    document.getElementById('show-edge-labels').checked = settings.showEdgeLabels;
+    document.getElementById('show-tooltips').checked = settings.showTooltips;
+    document.getElementById('auto-group-modules').checked = settings.autoGroupModules;
+    document.getElementById('node-size').value = settings.nodeSize;
+    document.getElementById('edge-width').value = settings.edgeWidth;
+    document.getElementById('font-size').value = settings.fontSize;
+    document.getElementById('animation-enabled').checked = settings.animationEnabled;
+    document.getElementById('high-quality-render').checked = settings.highQualityRender;
+    
+    // Update value displays
+    document.getElementById('node-size-value').textContent = settings.nodeSize + '%';
+    document.getElementById('edge-width-value').textContent = settings.edgeWidth + 'px';
+    document.getElementById('font-size-value').textContent = settings.fontSize + 'px';
+}
+
+/**
+ * Hide settings panel
+ */
+function hideSettings() {
+    document.getElementById('settings-panel').classList.add('hidden');
+}
+
+/**
+ * Apply settings changes
+ */
+function applySettings() {
+    // Gather settings from UI
+    settings.showEdgeLabels = document.getElementById('show-edge-labels').checked;
+    settings.showTooltips = document.getElementById('show-tooltips').checked;
+    settings.autoGroupModules = document.getElementById('auto-group-modules').checked;
+    settings.nodeSize = parseInt(document.getElementById('node-size').value);
+    settings.edgeWidth = parseInt(document.getElementById('edge-width').value);
+    settings.fontSize = parseInt(document.getElementById('font-size').value);
+    settings.animationEnabled = document.getElementById('animation-enabled').checked;
+    settings.highQualityRender = document.getElementById('high-quality-render').checked;
+    
+    // Apply visual changes
+    const nodeSizeScale = settings.nodeSize / 100;
+    cy.style()
+        .selector('node')
+        .style('font-size', settings.fontSize + 'px')
+        .style('width', ele => ele.width() * nodeSizeScale)
+        .style('height', ele => ele.height() * nodeSizeScale)
+        .selector('edge')
+        .style('width', settings.edgeWidth)
+        .style('font-size', (settings.fontSize - 2) + 'px')
+        .style('label', settings.showEdgeLabels ? 'data(label)' : '')
+        .update();
+    
+    // Toggle tooltips
+    if (!settings.showTooltips) {
+        cy.off('mouseover', 'node');
+        cy.off('mouseout', 'node');
+    } else {
+        cy.on('mouseover', 'node', function(evt) {
+            const node = evt.target;
+            if (!node.data('isModule')) {
+                showEnhancedTooltip(node, evt);
+            }
+        });
+        cy.on('mouseout', 'node', function(evt) {
+            hideEnhancedTooltip();
+        });
+    }
+    
+    // Save settings to localStorage
+    localStorage.setItem('codemapSettings', JSON.stringify(settings));
+    
+    hideSettings();
+}
+
+/**
+ * Reset settings to defaults
+ */
+function resetSettings() {
+    settings.showEdgeLabels = true;
+    settings.showTooltips = true;
+    settings.autoGroupModules = true;
+    settings.nodeSize = 100;
+    settings.edgeWidth = 2;
+    settings.fontSize = 12;
+    settings.animationEnabled = true;
+    settings.highQualityRender = true;
+    
+    // Update UI
+    showSettings();
+}
+
+// Load settings from localStorage on startup
+window.addEventListener('DOMContentLoaded', () => {
+    const savedSettings = localStorage.getItem('codemapSettings');
+    if (savedSettings) {
+        Object.assign(settings, JSON.parse(savedSettings));
+    }
+});
