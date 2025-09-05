@@ -11,7 +11,7 @@
 
 These documents form the complete project specification and must be understood before making any changes.
 
-## Current Phase: ALL PHASES COMPLETE ✅ - v1.0.0 Released!  
+## Current Phase: ALL PHASES COMPLETE ✅ - v1.0.1 Released with CI/CD!  
 
 ### ✅ Phase 1 Accomplishments (Completed)
 - **Project structure** created at `/mnt/c/dev/CodeMap/Repo`
@@ -189,8 +189,15 @@ CodeMap v1.0.0 is now a fully functional visual call graph generator with:
 - Stub/missing function detection
 - Production-ready release
 
+### 🚀 Latest Release: v1.0.1
+- **CI/CD Pipeline**: GitHub Actions workflow for automated builds
+- **Multi-platform**: Windows (MSVC) and Linux (GCC) builds
+- **Automatic releases**: Triggered by version tags
+- **Release artifacts**: Available at `/mnt/c/dev/Releases/CodeMap/v1.0.1/`
+
 ### 🔄 Repository Status
 - GitHub: https://github.com/mugonmuydesk/CodeMap
-- Latest release: v1.0.0
+- Latest release: v1.0.1 with CI/CD
 - All contracts and tests are protected from modification
 - ALL 7 PHASES COMPLETE ✅
+- Continuous Integration/Deployment ACTIVE ✅
