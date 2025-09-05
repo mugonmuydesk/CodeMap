@@ -1,0 +1,10 @@
+^C:\DEV\CODEMAP\REPO\BUILD\CMAKEFILES\F4D9C2C9C56F93B641F934A5FA48B006\GENERATE.STAMP.RULE
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/dev/CodeMap/Repo -BC:/dev/CodeMap/Repo/build --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file C:/dev/CodeMap/Repo/build/CodeMap.sln
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
